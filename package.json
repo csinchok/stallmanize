@@ -1,0 +1,22 @@
+{
+  "name": "stallmanize",
+  "version": "1.0.0",
+  "description": "A way to view webpages in a more sanitized way",
+  "main": "bin/stallmanize.js",
+  "bin": {
+    "stallmanize": "stallmanize.js"
+  },
+  "dependencies": {
+    "chrome-remote-interface": "^0.25.5",
+    "jsdom": "^11.6.2",
+    "request": "^2.83.0",
+    "tempy": "^0.2.1",
+    "yargs": "^11.0.0"
+  },
+  "devDependencies": {},
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "",
+  "license": "ISC"
+}
