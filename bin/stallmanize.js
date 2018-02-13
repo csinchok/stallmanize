@@ -26,11 +26,12 @@ yargs.options({
 
 const argv = yargs.argv;
 
-function loadUrl(url) {
+
+function loadUrl(url, port) {
 
     const options = {
         host: '127.0.0.1',
-        port: argv.port
+        port: port
     };
 
     CDP(options, (client) => {
@@ -52,7 +53,7 @@ function loadUrl(url) {
 
     }).on('error', (err) => {
         console.log('not running....')
-        spawn('chromium-browser', ['--app=' + url, '--remote-debugging-port=' + argv.port], {
+        spawn('chromium-browser', ['--app=' + url, '--remote-debugging-port=' + port], {
             detached: true,
             stdio: 'ignore'
         }).unref();
@@ -60,20 +61,40 @@ function loadUrl(url) {
 }
 
 
-// 'https://attwiw.com/2018/02/08/today-in-middle-eastern-history-iraqs-ramadan-revolution-1963/'
-request.get(argv.url, (err, res, body) => {
-    var dom = new JSDOM(body, {'url': argv.url});
-    Node = dom.window.Node;
-    var readable = new Readability(argv.url, dom.window.document).parse();
-    var tempPath = tempy.file({extension: 'html'})
+function makeReadable(url, cbk) {
+    // 'https://attwiw.com/2018/02/08/today-in-middle-eastern-history-iraqs-ramadan-revolution-1963/'
+    request.get(url, (err, res, body) => {
+        var dom = new JSDOM(body, {'url': url});
+        Node = dom.window.Node;
+        var readable = new Readability(url, dom.window.document).parse();
 
-    fs.writeFile(tempPath, readable.content, (err) => {  
-        // throws an error, you could also catch it here
-        if (err) throw err;
-    
-        // success case, the file was saved
-        console.log(tempPath);
+        var tempPath = tempy.file({extension: 'html'});
+        var readableHtml = `
+        <html>
+            <head>
+            <style>
+                body {
+                    font-family: Arial,Helvetica Neue,Helvetica,sans-serif; 
+                }
+            </style>
+            </head>
+            <body>
+                <h1>${readable.title}</h1>
+                ${readable.content}
+            </body>
+        </html>`;
 
-        loadUrl('file://' + tempPath);
+        fs.writeFile(tempPath, readableHtml, (err) => {  
+            // throws an error, you could also catch it here
+            if (err) throw err;
+        
+            // success case, the file was saved, lets call back with the path
+            cbk(tempPath)
+        });
     });
-});
+}
+
+
+makeReadable(argv.url, (path) => {
+    loadUrl('file://' + path, argv.port);
+})
