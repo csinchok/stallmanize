@@ -1,10 +1,10 @@
 {
   "name": "stallmanize",
-  "version": "1.0.0",
+  "version": "1.0.2",
   "description": "A way to view webpages in a more sanitized way",
   "main": "bin/stallmanize.js",
   "bin": {
-    "stallmanize": "stallmanize.js"
+    "stallmanize": "bin/stallmanize.js"
   },
   "dependencies": {
     "chrome-remote-interface": "^0.25.5",
